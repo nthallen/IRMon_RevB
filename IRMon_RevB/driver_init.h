@@ -38,7 +38,7 @@ extern struct i2c_m_async_desc I2C;
 extern struct pwm_descriptor       PWM_CTRL;
 extern struct can_async_descriptor CAN_CTRL;
 
-extern struct dac_sync_descriptor DAC;
+extern struct dac_sync_descriptor IRDAC;
 
 void USART_Diag_PORT_init(void);
 void USART_Diag_CLOCK_init(void);
@@ -52,9 +52,9 @@ void PWM_CTRL_PORT_init(void);
 void PWM_CTRL_CLOCK_init(void);
 void PWM_CTRL_init(void);
 
-void DAC_PORT_init(void);
-void DAC_CLOCK_init(void);
-void DAC_init(void);
+void IRDAC_PORT_init(void);
+void IRDAC_CLOCK_init(void);
+void IRDAC_init(void);
 
 /**
  * \brief Perform system initialization, initialize pins and clocks for

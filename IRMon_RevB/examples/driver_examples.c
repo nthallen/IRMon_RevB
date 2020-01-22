@@ -129,16 +129,16 @@ void CAN_CTRL_example(void)
 }
 
 /**
- * Example of using DAC to generate waveform.
+ * Example of using IRDAC to generate waveform.
  */
-void DAC_example(void)
+void IRDAC_example(void)
 {
 	uint16_t i = 0;
 
-	dac_sync_enable_channel(&DAC, 0);
+	dac_sync_enable_channel(&IRDAC, 0);
 
 	for (;;) {
-		dac_sync_write(&DAC, 0, &i, 1);
+		dac_sync_write(&IRDAC, 0, &i, 1);
 		i = (i + 1) % 1024;
 	}
 }

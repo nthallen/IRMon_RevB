@@ -771,8 +771,8 @@ drivers:
           external_frequency: 0
         configuration:
           can_gclk_selection: Generic clock generator 0
-  DAC:
-    user_label: DAC
+  IRDAC:
+    user_label: IRDAC
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::DAC::driver_config_definition::DAC::HAL:Driver:DAC.Sync
     functionality: DAC
     api: HAL:Driver:DAC_Sync
@@ -789,7 +789,7 @@ drivers:
       dac_arch_startei: false
       dac_arch_vpd: false
     optional_signals:
-    - identifier: DAC:VOUT
+    - identifier: IRDAC:VOUT
       pad: PA02
       mode: Enabled
       configuration: null

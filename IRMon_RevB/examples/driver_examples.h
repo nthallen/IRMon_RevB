@@ -20,7 +20,7 @@ void PWM_CTRL_example(void);
 
 void CAN_CTRL_example(void);
 
-void DAC_example(void);
+void IRDAC_example(void);
 
 #ifdef __cplusplus
 }

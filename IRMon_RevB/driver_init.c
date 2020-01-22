@@ -23,7 +23,7 @@ struct i2c_m_async_desc I2C;
 
 struct pwm_descriptor PWM_CTRL;
 
-struct dac_sync_descriptor DAC;
+struct dac_sync_descriptor IRDAC;
 
 /**
  * \brief USART Clock initialization function
@@ -142,7 +142,7 @@ void CAN_CTRL_init(void)
 	CAN_CTRL_PORT_init();
 }
 
-void DAC_PORT_init(void)
+void IRDAC_PORT_init(void)
 {
 
 	// Disable digital pin circuitry
@@ -151,18 +151,18 @@ void DAC_PORT_init(void)
 	gpio_set_pin_function(IR, PINMUX_PA02B_DAC_VOUT);
 }
 
-void DAC_CLOCK_init(void)
+void IRDAC_CLOCK_init(void)
 {
 
 	hri_mclk_set_APBCMASK_DAC_bit(MCLK);
 	hri_gclk_write_PCHCTRL_reg(GCLK, DAC_GCLK_ID, CONF_GCLK_DAC_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
 }
 
-void DAC_init(void)
+void IRDAC_init(void)
 {
-	DAC_CLOCK_init();
-	dac_sync_init(&DAC, DAC);
-	DAC_PORT_init();
+	IRDAC_CLOCK_init();
+	dac_sync_init(&IRDAC, DAC);
+	IRDAC_PORT_init();
 }
 
 void system_init(void)
@@ -233,5 +233,5 @@ void system_init(void)
 	PWM_CTRL_init();
 	CAN_CTRL_init();
 
-	DAC_init();
+	IRDAC_init();
 }
