@@ -1,21 +1,21 @@
 #include <atmel_start.h>
-#include "usart.h"
+// #include "usart.h"
 #include "can_control.h"
 #include "subbus.h"
-#include "control.h"
-#include "i2c.h"
-#include "commands.h"
+// #include "control.h"
+// #include "i2c.h"
+// #include "commands.h"
 
 int main(void)
 {
 	/* Initializes MCU, drivers and middleware */
 	atmel_start_init();
-  i2c_enable(I2C_ENABLE_DEFAULT);
+  // i2c_enable(I2C_ENABLE_DEFAULT);
   if (subbus_add_driver(&sb_base)
       || subbus_add_driver(&sb_fail_sw)
       || subbus_add_driver(&sb_can_desc)
-      || subbus_add_driver(&sb_i2c)
-      || subbus_add_driver(&sb_cmd)
+//    || subbus_add_driver(&sb_i2c)
+//    || subbus_add_driver(&sb_cmd)
       || subbus_add_driver(&sb_can)
      )
   {

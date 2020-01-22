@@ -1,7 +1,7 @@
 .vs
 *.asv
 Debug
-Debug_SN*
+SN*_Debug
 *.atzip
 .atmel-start-backup
 *.sr
