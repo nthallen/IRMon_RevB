@@ -572,14 +572,14 @@ drivers:
       usart_tx_enable: true
     optional_signals: []
     variant:
-      specification: TXPO=1, RXPO=0, CMODE=0
+      specification: TXPO=0, RXPO=1, CMODE=0
       required_signals:
       - name: SERCOM0/PAD/0
         pad: PA04
-        label: RX
-      - name: SERCOM0/PAD/2
-        pad: PA10
         label: TX
+      - name: SERCOM0/PAD/1
+        pad: PA05
+        label: RX
     clocks:
       domain_group:
         nodes:
@@ -813,11 +813,17 @@ pads:
     mode: Analog
     user_label: IR
     configuration: null
-  UART_RX:
+  FTRX_SAMCTX:
     name: PA04
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA04
     mode: Peripheral IO
-    user_label: UART_RX
+    user_label: FTRX_SAMCTX
+    configuration: null
+  FTTX_SAMCRX:
+    name: PA05
+    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA05
+    mode: Peripheral IO
+    user_label: FTTX_SAMCRX
     configuration: null
   RSTB:
     name: PA06
@@ -844,12 +850,6 @@ pads:
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA09
     mode: I2C
     user_label: SCL
-    configuration: null
-  UART_TX:
-    name: PA10
-    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA10
-    mode: Peripheral IO
-    user_label: UART_TX
     configuration: null
   PWM0:
     name: PA12

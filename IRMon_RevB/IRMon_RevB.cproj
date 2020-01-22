@@ -138,9 +138,9 @@
           <AcmeProjectActionInfo Action="File" Source="hri/hri_tsens_c21.h" IsConfig="false" Hash="OFh3vm9bu5bqLHs8A9r6tA" />
           <AcmeProjectActionInfo Action="File" Source="hri/hri_wdt_c21.h" IsConfig="false" Hash="Mv9f3Eq4CdnYzB5ovab7Ew" />
           <AcmeProjectActionInfo Action="File" Source="main.c" IsConfig="false" Hash="k0AH7j+BrmdFhBPzCCMptA" />
-          <AcmeProjectActionInfo Action="File" Source="driver_init.c" IsConfig="false" Hash="cpM1wH5mB2YYNec/AWAblg" />
+          <AcmeProjectActionInfo Action="File" Source="driver_init.c" IsConfig="false" Hash="9zGmKD0yTWv88cIpWfFCfQ" />
           <AcmeProjectActionInfo Action="File" Source="driver_init.h" IsConfig="false" Hash="vzqsG5c2up+j97/izGqxtA" />
-          <AcmeProjectActionInfo Action="File" Source="atmel_start_pins.h" IsConfig="false" Hash="qcU3ed1ZPNTiqPCgHiVFPw" />
+          <AcmeProjectActionInfo Action="File" Source="atmel_start_pins.h" IsConfig="false" Hash="RVwNmszt8V6QTf6tbvuqIw" />
           <AcmeProjectActionInfo Action="File" Source="examples/driver_examples.h" IsConfig="false" Hash="pXSlmqFTUjCjhyt5veeo0w" />
           <AcmeProjectActionInfo Action="File" Source="examples/driver_examples.c" IsConfig="false" Hash="SDmbBWk+OmFhxS/tTv3VoQ" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_divas_config.h" IsConfig="false" Hash="guqltsUm9QXCxoea3f+S6g" />
@@ -190,7 +190,7 @@
           <AcmeProjectActionInfo Action="File" Source="config/hpl_osc32kctrl_config.h" IsConfig="true" Hash="e9o/TJDK3cfkTdnVxdMDjA" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_oscctrl_config.h" IsConfig="true" Hash="DtqDhl/ohzNbG3frgA3pHQ" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_port_config.h" IsConfig="true" Hash="rMTNR+5FXtu+wfT1NbfRRA" />
-          <AcmeProjectActionInfo Action="File" Source="config/hpl_sercom_config.h" IsConfig="true" Hash="MWcQ1bvt5f6iu8X7t/l9Jg" />
+          <AcmeProjectActionInfo Action="File" Source="config/hpl_sercom_config.h" IsConfig="true" Hash="gNeiS/FtzTVc286OulUrFw" />
           <AcmeProjectActionInfo Action="File" Source="config/hpl_tcc_config.h" IsConfig="true" Hash="9KprUWiINkyZ8YZRGl6jfQ" />
           <AcmeProjectActionInfo Action="File" Source="config/peripheral_clk_config.h" IsConfig="true" Hash="9J5mabqVRKYA+LXuMsM/EA" />
         </AcmeActionInfos>

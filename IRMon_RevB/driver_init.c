@@ -46,9 +46,9 @@ void USART_Diag_CLOCK_init()
 void USART_Diag_PORT_init()
 {
 
-	gpio_set_pin_function(UART_RX, PINMUX_PA04D_SERCOM0_PAD0);
+	gpio_set_pin_function(FTRX_SAMCTX, PINMUX_PA04D_SERCOM0_PAD0);
 
-	gpio_set_pin_function(UART_TX, PINMUX_PA10C_SERCOM0_PAD2);
+	gpio_set_pin_function(FTTX_SAMCRX, PINMUX_PA05D_SERCOM0_PAD1);
 }
 
 /**

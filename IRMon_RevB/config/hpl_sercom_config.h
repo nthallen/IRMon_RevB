@@ -185,11 +185,11 @@
 #endif
 
 #ifndef CONF_SERCOM_0_USART_RXPO
-#define CONF_SERCOM_0_USART_RXPO 0 /* RX is on PIN_PA04 */
+#define CONF_SERCOM_0_USART_RXPO 1 /* RX is on PIN_PA05 */
 #endif
 
 #ifndef CONF_SERCOM_0_USART_TXPO
-#define CONF_SERCOM_0_USART_TXPO 1 /* TX is on PIN_PA10 */
+#define CONF_SERCOM_0_USART_TXPO 0 /* TX is on PIN_PA04 */
 #endif
 
 /* Set correct parity settings in register interface based on PARITY setting */
