@@ -31,7 +31,7 @@
 // <i> Indicates whether Run in Standby is enabled or not
 // <id> gclk_arch_gen_0_runstdby
 #ifndef CONF_GCLK_GEN_0_RUNSTDBY
-#define CONF_GCLK_GEN_0_RUNSTDBY 0
+#define CONF_GCLK_GEN_0_RUNSTDBY 1
 #endif
 
 // <q> Divide Selection
@@ -45,7 +45,7 @@
 // <i> Indicates whether Output Enable is enabled or not
 // <id> gclk_arch_gen_0_oe
 #ifndef CONF_GCLK_GEN_0_OE
-#define CONF_GCLK_GEN_0_OE 0
+#define CONF_GCLK_GEN_0_OE 1
 #endif
 
 // <q> Output Off Value

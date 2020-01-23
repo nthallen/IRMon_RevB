@@ -343,9 +343,9 @@ drivers:
       enable_gclk_gen_7__externalclock: 1000000
       gclk_arch_gen_0_enable: true
       gclk_arch_gen_0_idc: false
-      gclk_arch_gen_0_oe: false
+      gclk_arch_gen_0_oe: true
       gclk_arch_gen_0_oov: false
-      gclk_arch_gen_0_runstdby: false
+      gclk_arch_gen_0_runstdby: true
       gclk_arch_gen_1_enable: true
       gclk_arch_gen_1_idc: true
       gclk_arch_gen_1_oe: true
