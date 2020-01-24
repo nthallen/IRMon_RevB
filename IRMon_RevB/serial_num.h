@@ -29,6 +29,11 @@
 #define SUBBUS_BOARD_LOCATION "Lamp A"
 #endif
 
+#if SUBBUS_BOARD_SN == 2
+#define CAN_BOARD_ID 1
+#define SUBBUS_BOARD_LOCATION "Lamp A"
+#endif
+
 #ifndef SUBBUS_BOARD_INSTRUMENT
 #define SUBBUS_BOARD_INSTRUMENT "Halogens"
 #endif

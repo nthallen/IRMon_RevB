@@ -426,6 +426,8 @@ static void can_control_init(void) {
 	filter.id   = CAN_ID_BOARD(CAN_BOARD_ID);
 	filter.mask = CAN_ID_BOARD_MASK | CAN_ID_REPLY_BIT;
 	can_async_set_filter(&CAN_CTRL, 0, CAN_FMT_STDID, &filter);
+  // This is a test only!
+  // can_send_error_1(1, CAN_ERR_BAD_ADDRESS, 1);
 }
 
 static subbus_cache_word_t can_cache[CAN_HIGH_ADDR-CAN_BASE_ADDR+1] = {
