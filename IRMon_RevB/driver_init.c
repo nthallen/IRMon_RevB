@@ -125,9 +125,9 @@ void PWM_CTRL_init(void)
 void CAN_CTRL_PORT_init(void)
 {
 
-	gpio_set_pin_function(CANRX, PINMUX_PA25G_CAN0_RX);
+	gpio_set_pin_function(PB11, PINMUX_PB11G_CAN1_RX);
 
-	gpio_set_pin_function(CANTX, PINMUX_PA24G_CAN0_TX);
+	gpio_set_pin_function(PB10, PINMUX_PB10G_CAN1_TX);
 }
 /**
  * \brief CAN initialization function
@@ -136,9 +136,9 @@ void CAN_CTRL_PORT_init(void)
  */
 void CAN_CTRL_init(void)
 {
-	hri_mclk_set_AHBMASK_CAN0_bit(MCLK);
-	hri_gclk_write_PCHCTRL_reg(GCLK, CAN0_GCLK_ID, CONF_GCLK_CAN0_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
-	can_async_init(&CAN_CTRL, CAN0);
+	hri_mclk_set_AHBMASK_CAN1_bit(MCLK);
+	hri_gclk_write_PCHCTRL_reg(GCLK, CAN1_GCLK_ID, CONF_GCLK_CAN1_SRC | (1 << GCLK_PCHCTRL_CHEN_Pos));
+	can_async_init(&CAN_CTRL, CAN1);
 	CAN_CTRL_PORT_init();
 }
 

@@ -709,7 +709,7 @@ drivers:
           tcc_gclk_selection: Generic clock generator 1
   CAN_CTRL:
     user_label: CAN_CTRL
-    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::CAN0::driver_config_definition::CAN::HAL:Driver:CAN.Async
+    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::CAN1::driver_config_definition::CAN::HAL:Driver:CAN.Async
     functionality: CAN
     api: HAL:Driver:CAN_Async
     configuration:
@@ -748,18 +748,18 @@ drivers:
       can_xidfc_lss: 2
     optional_signals:
     - identifier: CAN_CTRL:RX
-      pad: PA25
+      pad: PB11
       mode: Enabled
       configuration: null
-      definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::optional_signal_definition::CAN0.RX
-      name: CAN0/RX
+      definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::optional_signal_definition::CAN1.RX
+      name: CAN1/RX
       label: RX
     - identifier: CAN_CTRL:TX
-      pad: PA24
+      pad: PB10
       mode: Enabled
       configuration: null
-      definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::optional_signal_definition::CAN0.TX
-      name: CAN0/TX
+      definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::optional_signal_definition::CAN1.TX
+      name: CAN1/TX
       label: TX
     variant: null
     clocks:
@@ -851,6 +851,18 @@ pads:
     mode: I2C
     user_label: SCL
     configuration: null
+  PB10:
+    name: PB10
+    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PB10
+    mode: Peripheral IO
+    user_label: PB10
+    configuration: null
+  PB11:
+    name: PB11
+    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PB11
+    mode: Peripheral IO
+    user_label: PB11
+    configuration: null
   PWM0:
     name: PA12
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA12
@@ -868,18 +880,6 @@ pads:
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA15
     mode: Digital input
     user_label: ALRT
-    configuration: null
-  CANTX:
-    name: PA24
-    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA24
-    mode: Peripheral IO
-    user_label: CANTX
-    configuration: null
-  CANRX:
-    name: PA25
-    definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::pad::PA25
-    mode: Peripheral IO
-    user_label: CANRX
     configuration: null
   STLED:
     name: PA27

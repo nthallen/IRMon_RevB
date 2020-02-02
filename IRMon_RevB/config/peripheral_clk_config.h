@@ -172,7 +172,7 @@
 #define CONF_GCLK_TCC2_FREQUENCY 400000
 #endif
 
-// <y> CAN0 Clock Source
+// <y> CAN1 Clock Source
 // <id> can_gclk_selection
 
 // <GCLK_PCHCTRL_GEN_GCLK0_Val"> Generic clock generator 0
@@ -191,17 +191,17 @@
 
 // <GCLK_PCHCTRL_GEN_GCLK7_Val"> Generic clock generator 7
 
-// <i> Select the clock source for CAN0.
-#ifndef CONF_GCLK_CAN0_SRC
-#define CONF_GCLK_CAN0_SRC GCLK_PCHCTRL_GEN_GCLK0_Val
+// <i> Select the clock source for CAN1.
+#ifndef CONF_GCLK_CAN1_SRC
+#define CONF_GCLK_CAN1_SRC GCLK_PCHCTRL_GEN_GCLK0_Val
 #endif
 
 /**
- * \def CONF_GCLK_CAN0_FREQUENCY
- * \brief CAN0's Clock frequency
+ * \def CONF_GCLK_CAN1_FREQUENCY
+ * \brief CAN1's Clock frequency
  */
-#ifndef CONF_GCLK_CAN0_FREQUENCY
-#define CONF_GCLK_CAN0_FREQUENCY 4000000
+#ifndef CONF_GCLK_CAN1_FREQUENCY
+#define CONF_GCLK_CAN1_FREQUENCY 4000000
 #endif
 
 // <y> DAC Clock Source
