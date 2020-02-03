@@ -66,9 +66,53 @@ bool subbus_add_driver(subbus_driver_t *driver);
 extern subbus_driver_t sb_base;
 extern subbus_driver_t sb_fail_sw;
 
+/**
+ * Fully qualified check that the specified subbus address is both
+ * valid and has been written. If so, copies the written value into
+ * the value argument and resets the iswritten flag.
+ * @param drv pointer to the subbus_driver_t struct
+ * @param addr the subbus address
+ * @param value pointer where the new value should be stored
+ * @return true if the address is valid and the iswritten flag was set
+ */
 bool subbus_cache_iswritten(subbus_driver_t *drv, uint16_t addr, uint16_t *value);
+
+/**
+ * Unqualified check of the local cache similar to subbus_cache_iswritten, but
+ * using the offset within the local cache instead of the global address.
+ * @param cache pointer to the local cache
+ * @param offset of the register in the local cache
+ * @param value pointer where the new value should be stored
+ * @return true if the iswritten flag was set
+ */
+bool sb_cache_iswritten(subbus_cache_word_t *cache, uint16_t offset, uint16_t *value);
 bool subbus_cache_was_read(subbus_driver_t *drv, uint16_t addr);
+
+/**
+ * This function differs from subbus_write() in that it directly
+ * updates the cache value. subbus_write() is specifically for
+ * write originating from the control port. subbus_cache_update() is
+ * used by internal functions for storing data acquired from
+ * peripherals, or for storing values written from the control
+ * port after verifying them.
+ * @param drv The driver structure
+ * @param addr The cache address
+ * @param data The value to be written
+ * @return true on success
+ */
 bool subbus_cache_update(subbus_driver_t *drv, uint16_t addr, uint16_t data);
+/**
+ * This function differs from subbus_write() in that it directly
+ * updates the cache value.
+ * This function differes from subbus_cache_update() in that it
+ * directly addresses the local cache without checking the range.
+ * On success, returns true and clears the was_read flag.
+ * @param cache pointer to the local cache
+ * @param offset of the register in the local cache
+ * @param data The value to be written
+ * @return true on success
+ */
+bool sb_cache_update(subbus_cache_word_t *cache, uint16_t offset, uint16_t data);
 
 #endif // USE_SUBBUS
 

@@ -24,26 +24,29 @@ static void i2c_read(int16_t i2c_addr, uint8_t *ibuf, int16_t nbytes);
 /**
  * These addresses belong to the I2C module
  * 0x20 R:  I2C_Status
- * 0x21 R:  PwrMon_I
- * 0x22 R:  PwrMon_V
- * 0x23 R:  PwrMon_V2
- * 0x24 R:  PwrMon_N
- * 0x25 R:  T1
- * 0x26 R:  T2
+ * 0x21 R:  HeaterV
+ * 0x22 R:  IRSetV
+ * 0x23 R:  ADS_N
+ * 0x24 R:  LTR: TBD
+ * 0x25 R:  LTR: TBD
+ * 0x26 R:  LTR: TBD
+ * 0x27 R:  MPL: TBD
+ * 0x28 R:  MPL: TBD
+ * 0x29 R:  MPL: TBD
  */
 static subbus_cache_word_t i2c_cache[I2C_HIGH_ADDR-I2C_BASE_ADDR+1] = {
   // Value, Wvalue, readable, was_read, writable, written, dynamic
-  // I2C Stataus I2C_STATUS_NREGS
+  // I2C Status I2C_STATUS_NREGS
   { 0, 0, true,  false,  false, false, false }, // Offset 0: R: I2C Status
   // ADS registers I2C_ADS_NREGS
   { 0, 0, true,  false,  true, false, false },  // V1
   { 0, 0, true,  false, false, false, false },  // V2
   { 0, 0, true,  false, false, false, false },  // N_reads before conversion complete
-  // LTR registers I2C_LTR_NREGS
+  // LTR digital light sensor registers I2C_LTR_NREGS: TBD
   { 0, 0, true,  false, false, false, false },  // Offset 1: R: PwrMon_I
   { 0, 0, true,  false, false, false, false },  // Offset 2: R: PwrMon_V
   { 0, 0, true,  false, false, false, false },  // Offset 3: R: PwrMon_V2
-  // MPL registers I2C_LTR_NREGS
+  // MPL digital barometer registers I2C_LTR_NREGS: TBD
   { 0, 0, true,  false, false, false, false },  // Offset 1: R: PwrMon_I
   { 0, 0, true,  false, false, false, false },  // Offset 2: R: PwrMon_V
   { 0, 0, true,  false, false, false, false },  // Offset 3: R: PwrMon_V2
@@ -123,8 +126,8 @@ static bool ads1115_poll(void) {
       ads_state = ads_t1_read_adc_tx;
       return false;
     case ads_t1_read_adc_tx: // Save converted value
-      subbus_cache_update(&sb_i2c, I2C_BASE_ADDR+I2C_ADS_OFFSET+0, (ads_ibuf[0] << 8) | ads_ibuf[1]);
-      subbus_cache_update(&sb_i2c, I2C_BASE_ADDR+I2C_ADS_OFFSET+2, ads_n_reads);
+      sb_cache_update(i2c_cache, I2C_ADS_OFFSET+0, (ads_ibuf[0] << 8) | ads_ibuf[1]);
+      sb_cache_update(i2c_cache, I2C_ADS_OFFSET+2, ads_n_reads);
       ads_state = ads_t2_init;
       return true;
     case ads_t2_init:
@@ -156,8 +159,8 @@ static bool ads1115_poll(void) {
       ads_state = ads_t2_read_adc_tx;
       return false;
     case ads_t2_read_adc_tx:
-      subbus_cache_update(&sb_i2c, I2C_BASE_ADDR+I2C_ADS_OFFSET+1, (ads_ibuf[0] << 8) | ads_ibuf[1]);
-      subbus_cache_update(&sb_i2c, I2C_BASE_ADDR+I2C_ADS_OFFSET+2, ads_n_reads);
+      sb_cache_update(i2c_cache, I2C_ADS_OFFSET+1, (ads_ibuf[0] << 8) | ads_ibuf[1]);
+      sb_cache_update(i2c_cache, I2C_ADS_OFFSET+2, ads_n_reads);
       ads_state = ads_t1_init;
       return true;
     default:

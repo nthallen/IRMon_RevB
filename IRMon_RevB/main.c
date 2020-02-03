@@ -5,6 +5,7 @@
 // #include "control.h"
 #include "i2c.h"
 // #include "commands.h"
+#include "pwm.h"
 
 int main(void)
 {
@@ -17,6 +18,7 @@ int main(void)
       || subbus_add_driver(&sb_i2c)
 //    || subbus_add_driver(&sb_cmd)
       || subbus_add_driver(&sb_can)
+      || subbus_add_driver(&sb_pwm)
      )
   {
     while (true) ; // some driver is misconfigured.
