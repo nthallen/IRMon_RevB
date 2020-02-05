@@ -26,7 +26,7 @@
 // <i> This defines the TCC2 prescaler value
 // <id> tcc_prescaler
 #ifndef CONF_TCC2_PRESCALER
-#define CONF_TCC2_PRESCALER TCC_CTRLA_PRESCALER_DIV8_Val
+#define CONF_TCC2_PRESCALER TCC_CTRLA_PRESCALER_DIV1_Val
 #endif
 
 // <hidden>
@@ -59,7 +59,7 @@
 // <i> Give index of the Compare Channel register here in 0x00-0x01 range.
 // <id> tcc_arch_sel_ch
 #ifndef CONF_TCC2_SEL_CH
-#define CONF_TCC2_SEL_CH 0x1
+#define CONF_TCC2_SEL_CH 0x0
 #endif
 
 /* Caculate pwm ccx register value based on WAVE_PER_VAL and Waveform Duty Value */
@@ -90,7 +90,7 @@
 // <i> Indicates whether the TCC2 will continue running in standby sleep mode or not
 // <id> tcc_arch_runstdby
 #ifndef CONF_TCC2_RUNSTDBY
-#define CONF_TCC2_RUNSTDBY 0
+#define CONF_TCC2_RUNSTDBY 1
 #endif
 
 // <y> TCC2 Prescaler and Counter Synchronization Selection
@@ -187,7 +187,7 @@
 // <i> Indicates whether the TCC2 Lock update is enabled or not
 // <id> tcc_arch_lupd
 #ifndef CONF_TCC2_LUPD
-#define CONF_TCC2_LUPD 1
+#define CONF_TCC2_LUPD 0
 #endif
 
 /* Commented intentionally. Timer uses fixed value of the following bit(s)/bitfield(s) of CTRL B register.

@@ -658,7 +658,7 @@ drivers:
       tcc_arch_dbgrun: false
       tcc_arch_evact0: Event action disabled
       tcc_arch_evact1: Event action disabled
-      tcc_arch_lupd: true
+      tcc_arch_lupd: false
       tcc_arch_mcei0: false
       tcc_arch_mcei1: false
       tcc_arch_mcei2: false
@@ -669,8 +669,8 @@ drivers:
       tcc_arch_mceo3: false
       tcc_arch_ovfeo: false
       tcc_arch_prescsync: Reload or reset counter on next GCLK
-      tcc_arch_runstdby: false
-      tcc_arch_sel_ch: 1
+      tcc_arch_runstdby: true
+      tcc_arch_sel_ch: 0
       tcc_arch_tcei0: false
       tcc_arch_tcei1: false
       tcc_arch_tceinv0: false
@@ -680,7 +680,7 @@ drivers:
       tcc_arch_wave_per_val: 1000
       tcc_arch_wavegen: Single-slope PWM
       tcc_per: 10000
-      tcc_prescaler: Divide by 8
+      tcc_prescaler: No division
       timer_event_control: false
     optional_signals:
     - identifier: PWM_CTRL:WO/0
@@ -702,11 +702,11 @@ drivers:
       domain_group:
         nodes:
         - name: TCC
-          input: Generic clock generator 1
+          input: Generic clock generator 0
           external: false
           external_frequency: 0
         configuration:
-          tcc_gclk_selection: Generic clock generator 1
+          tcc_gclk_selection: Generic clock generator 0
   CAN_CTRL:
     user_label: CAN_CTRL
     definition: Atmel:SAMC21_Drivers:0.0.1::SAMC21G18A-AN::CAN0::driver_config_definition::CAN::HAL:Driver:CAN.Async
