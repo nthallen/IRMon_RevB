@@ -230,8 +230,8 @@ void _pwm_set_param(struct _pwm_device *const device, const pwm_period_t period,
 	void *const         hw      = device->hw;
 	struct tcc_pwm_cfg *cfg_pwm = _get_tcc_pwm_cfg(hw);
 	if (cfg_pwm != NULL) {
-		hri_tcc_write_PERB_reg(hw, period);
-		hri_tcc_write_CCB_reg(hw, cfg_pwm->sel_ch, duty_cycle);
+		hri_tcc_write_PER_reg(hw, period);
+		hri_tcc_write_CC_reg(hw, cfg_pwm->sel_ch, duty_cycle);
 		;
 	}
 }
