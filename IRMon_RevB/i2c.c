@@ -12,6 +12,9 @@ static bool i2c_enabled = I2C_ENABLE_DEFAULT;
 static struct io_descriptor *I2C_io;
 static volatile bool I2C_txfr_complete = true;
 static volatile bool I2C_error_seen = false;
+/** i2c error codes are defined in hal/include/hpl_i2c_m_sync.h
+ *  named I2C_ERR_* and I2C_OK
+ */
 static volatile int32_t I2C_error = I2C_OK;
 static volatile uint8_t pm_ov_status = 0;
 #define PM_SLAVE_ADDR 0x67
@@ -43,9 +46,10 @@ static subbus_cache_word_t i2c_cache[I2C_HIGH_ADDR-I2C_BASE_ADDR+1] = {
   { 0, 0, true,  false, false, false, false },  // V2
   { 0, 0, true,  false, false, false, false },  // N_reads before conversion complete
   // LTR digital light sensor registers I2C_LTR_NREGS: TBD
-  { 0, 0, true,  false, false, false, false },  // Offset 1: R: PwrMon_I
-  { 0, 0, true,  false, false, false, false },  // Offset 2: R: PwrMon_V
-  { 0, 0, true,  false, false, false, false },  // Offset 3: R: PwrMon_V2
+  { 0, 0, true,  false, true,  false, false },  // Offset 0: R: LTR_IDS W: Set Rate
+  { 0, 0, true,  false, true,  false, false },  // Offset 1: R: LTR_STATUS W: Set Gain
+  { 0, 0, true,  false, false, false, false },  // Offset 2: R: LTR_CH0: Blue Response
+  { 0, 0, true,  false, false, false, false },  // Offset 3: R: LTR_CH1: IR Response
   // MPL digital barometer registers I2C_LTR_NREGS: TBD
   { 0, 0, true,  false, false, false, false },  // Offset 1: R: PwrMon_I
   { 0, 0, true,  false, false, false, false },  // Offset 2: R: PwrMon_V
@@ -90,7 +94,7 @@ static uint8_t ads_t1_cmd[3] = { 0x01, 0x83, 0x03 };
 static uint8_t ads_t2_cmd[3] = { 0x01, 0xB3, 0x03 };
 static uint8_t ads_r0_prep[1] = { 0x00 };
 static uint8_t ads_ibuf[2];
-#define ADS_SLAVE_ADDR 0x48
+#define ADS_SLAVE_ADDR 0x48 // 7-bit device address
 
 /**
  * @return true if the bus is free and available for another device
@@ -169,10 +173,100 @@ static bool ads1115_poll(void) {
   return true;
 }
 
+enum ltr_state_t {ltr_init, ltr_init_tx,
+                  ltr_init_1, ltr_init_1_tx,
+                  ltr_init_2, ltr_init_2_tx,
+                  ltr_init_3, ltr_init_3_tx,
+                  ltr_rd_stat, ltr_rd_stat_tx,
+                  ltr_rd_chs, ltr_rd_chs_tx,
+                  ltr_wr_rate, ltr_wr_rate_tx,
+                  ltr_wr_gain, ltr_wr_gain_tx,
+                  ltr_read_1,  };
+static enum ltr_state_t ltr_state = ltr_init;
+static uint8_t ltr_obuf[2];
+static uint8_t ltr_ibuf[6]; // room to accumulate responses
+static uint8_t *ltr_ibufp; // used by ltr_setup_read()
+static enum ltr_state_t ltr_read_next; // used by ltr_setup_read()
+#define LTR_SLAVE_ADDR 0x29 // 7-bit device address
 
-// enum ltr_state_t {ltr_init, ltr_init_tx};
-// static enum ltr_state_t ltr_state = ltr_init;
+static bool ltr_setup_read(uint8_t reg, uint8_t *ibuf, enum ltr_state_t next) {
+  ltr_obuf[0] = reg;
+  ltr_ibufp = ibuf;
+  ltr_read_next = next;
+  i2c_write(LTR_SLAVE_ADDR, ltr_obuf, 1);
+  ltr_state = ltr_read_1;
+  return false;
+}
 
+static bool ltr_setup_write2(uint8_t b1, uint8_t b2, enum ltr_state_t next) {
+  ltr_obuf[0] = b1;
+  ltr_obuf[1] = b2;
+  i2c_write(LTR_SLAVE_ADDR, ltr_obuf, 2);
+  ltr_state = next;
+  return false;
+}
+
+static bool ltr_tx_complete(enum ltr_state_t next) {
+  ltr_state = next;
+  return true;
+}
+
+static inline uint16_t ltr_word(uint8_t *ibuf) {
+  return (ibuf[1] << 8) + ibuf[0];
+}
+
+static bool ltr_poll() {
+  static int chs_i;
+  static uint16_t ltr_new_rate, ltr_new_gain;
+
+  switch (ltr_state) {
+    case ltr_init: return ltr_setup_read(0x86, ltr_ibuf+0, ltr_init_tx);
+    case ltr_init_tx: return ltr_tx_complete(ltr_init_1);
+    case ltr_init_1: return ltr_setup_read(0x87, ltr_ibuf+1, ltr_init_1_tx);
+    case ltr_init_1_tx:
+      sb_cache_update(i2c_cache, I2C_LTR_OFFSET, ltr_word(ltr_ibuf));
+      return ltr_tx_complete(ltr_init_2);
+    case ltr_init_2: return ltr_setup_write2(0x80, 0x01, ltr_init_2_tx); // X1 gain + enable
+    case ltr_init_2_tx: return ltr_tx_complete(ltr_init_3);
+    case ltr_init_3: return ltr_setup_write2(0x85, 0x22, ltr_init_3_tx); // 150 ms integration 200 ms report
+    case ltr_init_3_tx: return ltr_tx_complete(ltr_rd_stat);
+    case ltr_rd_stat: return ltr_setup_read(0x8C, ltr_ibuf+0, ltr_rd_stat_tx);
+    case ltr_rd_stat_tx:
+      if (ltr_ibuf[0] & 0x4) { // new data
+        chs_i = 0;
+        return ltr_tx_complete(ltr_rd_chs);
+      }
+      if (!sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
+        sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0] | 0x8);
+      }
+      return ltr_tx_complete(ltr_rd_stat);
+    case ltr_rd_chs: return ltr_setup_read(0x88+chs_i, ltr_ibuf+1+chs_i, ltr_rd_chs_tx);
+    case ltr_rd_chs_tx:
+      if (++chs_i == 4) {
+        if (!(sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+1)^sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3))) {
+          sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0]);
+          sb_cache_update(i2c_cache, I2C_LTR_OFFSET+2, ltr_word(ltr_ibuf+1));
+          sb_cache_update(i2c_cache, I2C_LTR_OFFSET+3, ltr_word(ltr_ibuf+3));
+        }
+        return ltr_tx_complete(
+                 sb_cache_iswritten(i2c_cache, I2C_LTR_OFFSET+1, &ltr_new_gain) ?
+                 ltr_wr_gain :
+                 sb_cache_iswritten(i2c_cache, I2C_LTR_OFFSET+0, &ltr_new_rate) ?
+                 ltr_wr_rate : ltr_rd_stat);
+      }
+      return ltr_tx_complete(ltr_rd_chs);
+    case ltr_read_1: // the reg has been written, now read 1
+      i2c_read(LTR_SLAVE_ADDR, ltr_ibufp, 1);
+      ltr_state = ltr_read_next;
+      return false;
+    case ltr_wr_gain: return ltr_setup_write2(0x80, ltr_new_gain & 0xFF, ltr_wr_rate_tx);
+    case ltr_wr_rate: return ltr_setup_write2(0x85, ltr_new_rate & 0xFF, ltr_wr_rate_tx);
+    case ltr_wr_rate_tx: return ltr_tx_complete(ltr_rd_stat);
+    default:
+      assert(false, __FILE__, __LINE__);
+  }
+  return true;
+}
 
 static void i2c_write(int16_t i2c_addr, const uint8_t *obuf, int16_t nbytes) {
   assert(I2C_txfr_complete, __FILE__, __LINE__);
@@ -198,6 +292,14 @@ static void I2C_async_error(struct i2c_m_async_desc *const i2c, int32_t error) {
   I2C_txfr_complete = true;
   I2C_error_seen = true;
   I2C_error = error;
+  if (sb_cache_was_read(i2c_cache, I2C_STATUS_OFFSET)) {
+    sb_cache_update(i2c_cache, I2C_STATUS_OFFSET, 0);
+  }
+  if (I2C_error >= -7 && I2C_error <= -2) {
+    uint16_t val = i2c_cache[I2C_STATUS_OFFSET].cache;
+    val |= (1 << (7+I2C_error));
+    sb_cache_update(i2c_cache, I2C_STATUS_OFFSET, val);
+  }
   if (error == I2C_ERR_BUS) {
     hri_sercomi2cm_write_STATUS_reg(I2C.device.hw, SERCOM_I2CM_STATUS_BUSERR);
     hri_sercomi2cm_clear_INTFLAG_reg(I2C.device.hw, I2C_INTFLAG_ERROR);
@@ -226,7 +328,7 @@ static void i2c_reset() {
   // io_write(I2C_io, I2C_example_str, 12);
 // }
 
-enum i2c_state_t {i2c_ads1115 };
+enum i2c_state_t {i2c_ads1115, i2c_ltr };
 static enum i2c_state_t i2c_state = i2c_ads1115;
 
 void i2c_poll(void) {
@@ -235,6 +337,11 @@ void i2c_poll(void) {
     switch (i2c_state) {
       case i2c_ads1115:
         if (ads1115_poll()) {
+          i2c_state = i2c_ltr;
+        }
+        break;
+      case i2c_ltr:
+        if (ltr_poll()) {
           i2c_state = i2c_ads1115;
         }
         break;

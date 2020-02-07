@@ -182,8 +182,11 @@ bool sb_cache_update(subbus_cache_word_t *cache, uint16_t offset, uint16_t data)
 
 bool subbus_cache_was_read(subbus_driver_t *drv, uint16_t addr) {
   if (addr >= drv->low && addr <= drv->high) {
-    subbus_cache_word_t *word = &drv->cache[addr-drv->low];
-    return word->was_read;
+    return sb_cache_was_read(drv->cache, addr-drv->low);
   }
   return false;
+}
+
+bool sb_cache_was_read(subbus_cache_word_t *cache, uint16_t offset) {
+  return cache[offset].was_read;
 }

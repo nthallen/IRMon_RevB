@@ -87,6 +87,7 @@ bool subbus_cache_iswritten(subbus_driver_t *drv, uint16_t addr, uint16_t *value
  */
 bool sb_cache_iswritten(subbus_cache_word_t *cache, uint16_t offset, uint16_t *value);
 bool subbus_cache_was_read(subbus_driver_t *drv, uint16_t addr);
+bool sb_cache_was_read(subbus_cache_word_t *cache, uint16_t offset);
 
 /**
  * This function differs from subbus_write() in that it directly

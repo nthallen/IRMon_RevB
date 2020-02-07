@@ -18,7 +18,7 @@
 #define SUBBUS_BOARD_BOARD_REV "Rev B"
 #define SUBBUS_BOARD_FIRMWARE_REV "V1.0"
 #define SUBBUS_BOARD_ID 12
-#define SUBBUS_BOARD_BUILD_NUM 2
+#define SUBBUS_BOARD_BUILD_NUM 3
 
 #if ! defined(SUBBUS_BOARD_SN)
 #error Must define SUBBUS_BOARD_SN in Build Properties
