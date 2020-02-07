@@ -190,6 +190,7 @@ static enum ltr_state_t ltr_read_next; // used by ltr_setup_read()
 #define LTR_SLAVE_ADDR 0x29 // 7-bit device address
 
 static bool ltr_setup_read(uint8_t reg, uint8_t *ibuf, enum ltr_state_t next) {
+  I2C_error_seen = false;
   ltr_obuf[0] = reg;
   ltr_ibufp = ibuf;
   ltr_read_next = next;
@@ -199,6 +200,7 @@ static bool ltr_setup_read(uint8_t reg, uint8_t *ibuf, enum ltr_state_t next) {
 }
 
 static bool ltr_setup_write2(uint8_t b1, uint8_t b2, enum ltr_state_t next) {
+  I2C_error_seen = false;
   ltr_obuf[0] = b1;
   ltr_obuf[1] = b2;
   i2c_write(LTR_SLAVE_ADDR, ltr_obuf, 2);
@@ -206,8 +208,8 @@ static bool ltr_setup_write2(uint8_t b1, uint8_t b2, enum ltr_state_t next) {
   return false;
 }
 
-static bool ltr_tx_complete(enum ltr_state_t next) {
-  ltr_state = next;
+static bool ltr_tx_complete(enum ltr_state_t next, enum ltr_state_t errnext) {
+  ltr_state = I2C_error_seen ? errnext : next;
   return true;
 }
 
@@ -221,25 +223,25 @@ static bool ltr_poll() {
 
   switch (ltr_state) {
     case ltr_init: return ltr_setup_read(0x86, ltr_ibuf+0, ltr_init_tx);
-    case ltr_init_tx: return ltr_tx_complete(ltr_init_1);
+    case ltr_init_tx: return ltr_tx_complete(ltr_init_1, ltr_init);
     case ltr_init_1: return ltr_setup_read(0x87, ltr_ibuf+1, ltr_init_1_tx);
     case ltr_init_1_tx:
       sb_cache_update(i2c_cache, I2C_LTR_OFFSET, ltr_word(ltr_ibuf));
-      return ltr_tx_complete(ltr_init_2);
+      return ltr_tx_complete(ltr_init_2, ltr_init);
     case ltr_init_2: return ltr_setup_write2(0x80, 0x01, ltr_init_2_tx); // X1 gain + enable
-    case ltr_init_2_tx: return ltr_tx_complete(ltr_init_3);
+    case ltr_init_2_tx: return ltr_tx_complete(ltr_init_3, ltr_init);
     case ltr_init_3: return ltr_setup_write2(0x85, 0x22, ltr_init_3_tx); // 150 ms integration 200 ms report
-    case ltr_init_3_tx: return ltr_tx_complete(ltr_rd_stat);
+    case ltr_init_3_tx: return ltr_tx_complete(ltr_rd_stat, ltr_init);
     case ltr_rd_stat: return ltr_setup_read(0x8C, ltr_ibuf+0, ltr_rd_stat_tx);
     case ltr_rd_stat_tx:
       if (ltr_ibuf[0] & 0x4) { // new data
         chs_i = 0;
-        return ltr_tx_complete(ltr_rd_chs);
+        return ltr_tx_complete(ltr_rd_chs, ltr_init);
       }
       if (!sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
         sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0] | 0x8);
       }
-      return ltr_tx_complete(ltr_rd_stat);
+      return ltr_tx_complete(ltr_rd_stat, ltr_init);
     case ltr_rd_chs: return ltr_setup_read(0x88+chs_i, ltr_ibuf+1+chs_i, ltr_rd_chs_tx);
     case ltr_rd_chs_tx:
       if (++chs_i == 4) {
@@ -252,16 +254,17 @@ static bool ltr_poll() {
                  sb_cache_iswritten(i2c_cache, I2C_LTR_OFFSET+1, &ltr_new_gain) ?
                  ltr_wr_gain :
                  sb_cache_iswritten(i2c_cache, I2C_LTR_OFFSET+0, &ltr_new_rate) ?
-                 ltr_wr_rate : ltr_rd_stat);
+                 ltr_wr_rate : ltr_rd_stat, ltr_init);
       }
-      return ltr_tx_complete(ltr_rd_chs);
+      return ltr_tx_complete(ltr_rd_chs, ltr_init);
     case ltr_read_1: // the reg has been written, now read 1
+      if (I2C_error_seen) return ltr_tx_complete(ltr_init, ltr_init);
       i2c_read(LTR_SLAVE_ADDR, ltr_ibufp, 1);
       ltr_state = ltr_read_next;
       return false;
     case ltr_wr_gain: return ltr_setup_write2(0x80, ltr_new_gain & 0xFF, ltr_wr_rate_tx);
     case ltr_wr_rate: return ltr_setup_write2(0x85, ltr_new_rate & 0xFF, ltr_wr_rate_tx);
-    case ltr_wr_rate_tx: return ltr_tx_complete(ltr_rd_stat);
+    case ltr_wr_rate_tx: return ltr_tx_complete(ltr_rd_stat, ltr_init);
     default:
       assert(false, __FILE__, __LINE__);
   }
