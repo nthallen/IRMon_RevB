@@ -372,13 +372,13 @@ static void process_can_request(struct can_message *msg) {
       // don't return
     }
     if (recv_buf.in_progress) {
+      ++recv_buf.seq;
       if (CAN_CMD_CODE(cmd) == recv_buf.cmd &&
           CAN_CMD_SEQ(cmd) == recv_buf.seq) {
         if (io_append(&recv_buf, &msg->data[1], msg->len-1)) {
           can_send_error_2(msg->id, CAN_ERR_OVERFLOW, cmd, msg->data[1]);
           return;
         }
-        ++recv_buf.seq;
       } else {
         can_send_error_1(msg->id, CAN_ERR_INVALID_SEQ, cmd);
         return;

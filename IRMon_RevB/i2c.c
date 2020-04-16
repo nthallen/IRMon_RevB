@@ -238,15 +238,23 @@ static bool ltr_poll() {
         chs_i = 0;
         return ltr_tx_complete(ltr_rd_chs, ltr_init);
       }
-      if (!sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
+      if (sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
         sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0] | 0x8);
       }
       return ltr_tx_complete(ltr_rd_stat, ltr_init);
     case ltr_rd_chs: return ltr_setup_read(0x88+chs_i, ltr_ibuf+1+chs_i, ltr_rd_chs_tx);
     case ltr_rd_chs_tx:
       if (++chs_i == 4) {
-        if (!(sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+1)^sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3))) {
-          sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0]);
+        bool ok_to_update = false;
+        if (sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+1)) {
+          if (sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
+            ok_to_update = true;
+          }
+        } else if (!sb_cache_was_read(i2c_cache, I2C_LTR_OFFSET+3)) {
+          // ok_to_update = true;
+        }
+        if (ok_to_update) {
+          sb_cache_update(i2c_cache, I2C_LTR_OFFSET+1, ltr_ibuf[0] | 0x8);
           sb_cache_update(i2c_cache, I2C_LTR_OFFSET+2, ltr_word(ltr_ibuf+1));
           sb_cache_update(i2c_cache, I2C_LTR_OFFSET+3, ltr_word(ltr_ibuf+3));
         }

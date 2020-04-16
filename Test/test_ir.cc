@@ -80,21 +80,6 @@ int main(int argc, char **argv) {
   } else {
     msg(3, "Failed to connect with subbus");
   }
-
-  identify_board(P, 1);
-  
-  uint16_t HeaterV = P->read_subbus(0x0121);
-  uint16_t IRSetV = P->read_subbus(0x0122);
-  uint16_t ADS_N = P->read_subbus(0x0123);
-  msg(0, "  HeaterV: %5u", HeaterV);
-  msg(0, "  IRSetV:  %5u", IRSetV);
-  msg(0, "  ADS_N:   %5u", ADS_N);
-  uint16_t PWM_Stat = P->read_subbus(0x0140);
-  uint16_t PWM_Period = P->read_subbus(0x0141);
-  uint16_t PWM_Duty_Cycle = P->read_subbus(0x0142);
-  msg(0, "  PWM_Stat: %5u", PWM_Stat);
-  msg(0, "  Period:   %5u", PWM_Period);
-  msg(0, "  DutyCyc:  %5u", PWM_Duty_Cycle);
   
   if (pwm_disable) {
     P->write_ack(0x0140, 0);
@@ -114,6 +99,37 @@ int main(int argc, char **argv) {
     P->write_ack(0x0142, duty);
     msg(0, "Setting PWM duty cycle to %u", duty);
   }
+
+  identify_board(P, 1);
+  
+  // ADS1115 Section
+  uint16_t HeaterI = P->read_subbus(0x0121);
+  uint16_t IRSetV = P->read_subbus(0x0122);
+  uint16_t ADS_N = P->read_subbus(0x0123);
+  msg(0, "  HeaterI: %5u raw", HeaterI);
+  msg(0, "  IRSetV:  %5u raw", IRSetV);
+  msg(0, "  ADS_N:   %5u", ADS_N);
+  
+  // PWM Section
+  uint16_t PWM_Stat = P->read_subbus(0x0140);
+  uint16_t PWM_Period = P->read_subbus(0x0141);
+  uint16_t PWM_Duty_Cycle = P->read_subbus(0x0142);
+  msg(0, "  PWM_Stat: %5u", PWM_Stat);
+  msg(0, "  Period:   %5u", PWM_Period);
+  msg(0, "  DutyCyc:  %5u", PWM_Duty_Cycle);
+  
+  // LTR Section
+  uint16_t LTR_IDS = P->read_subbus(0x0124);
+  uint16_t LTR_Status = P->read_subbus(0x0125);
+  uint16_t LTR_CH0 = P->read_subbus(0x0126);
+  uint16_t LTR_CH1 = P->read_subbus(0x0127);
+  msg(0, "LTR_IDS: 0x%04X%s", LTR_IDS, LTR_IDS==0x05A0 ? "" : ": Expected 0x05A0" );
+  msg(0, "LTR_Status: Responding: %s New Data: %s Gain: %u",
+    (LTR_Status & 0x8) ? "Yes" : "NO",
+    (LTR_Status & 0x4) ? "Yes" : "NO",
+    (LTR_Status >> 4) & 0x7);
+  msg(0, "LTR_CH0: %5u raw", LTR_CH0);
+  msg(0, "LTR_CH1: %5u raw", LTR_CH1);
   
   // P->subbus_quit();
   return 0;
